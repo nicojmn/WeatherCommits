@@ -1,5 +1,5 @@
 import { listPublicRepos, getCommits, commitToDate } from "$lib/github"
-import type { Commit } from "$lib/github"
+import type { Commit } from "$lib/types/github"
 import type { PageServerLoad } from './$types';
 
 let dates: string[] = []

@@ -1,4 +1,5 @@
 import { GITHUB_TOKEN } from "$env/static/private";
+import type { Repo, Commit } from "$lib/types/github";
 import axios from "axios"
 
 
@@ -11,16 +12,7 @@ const api = axios.create({
     },
 });
 
-export interface Repo {
-    name: string,
-    username: string,
-    owner: string
-}
 
-export interface Commit {
-    author: string,
-    date: string,
-}
 
 export async function listPublicRepos(username: string): Promise<Repo[]> {
     const resp = await api.get(`${GH_API_URL}/users/${username}/repos?type=public`)
