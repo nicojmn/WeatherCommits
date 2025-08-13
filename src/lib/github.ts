@@ -65,6 +65,6 @@ export async function getCommits(repo: Repo, username: string): Promise<Commit[]
     return commits
 }
 
-export async function commitToDate(commit: Commit) {
-    return new Date(commit.date).toISOString()
+export async function commitToDate(commit: Commit): Promise<string> {
+    return new Date(commit.date).toISOString().split("T")[0];
 }
