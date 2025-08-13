@@ -10,11 +10,9 @@ export const load: PageServerLoad = async ({ url }) => {
 
     const repos = await listPublicRepos(user);
     repos.forEach((repo) => {
-        getCommits(repo).then((commits: Commit[]) => {
+        getCommits(repo, user).then((commits: Commit[]) => {
             commits.forEach((commit => {
-                commitToDate(commit).then(date => {
-                    dates.push(date)
-                })
+                dates.push(commit.date)
             }))
         })
     })

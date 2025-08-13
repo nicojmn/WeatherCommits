@@ -1,6 +1,7 @@
 import { GITHUB_TOKEN } from "$env/static/private";
 import type { Repo, Commit } from "$lib/types/github";
 import axios from "axios"
+import { Octokit } from "@octokit/rest";
 
 
 const GH_API_URL = "https://api.github.com"
@@ -11,6 +12,12 @@ const api = axios.create({
         Authorization: `token ${GITHUB_TOKEN}`,
     },
 });
+
+const octokit = new Octokit({
+    auth: GITHUB_TOKEN,
+    baseUrl: GH_API_URL,
+    userAgent: "weather-commits v0.0.1"
+})
 
 
 
@@ -23,18 +30,29 @@ export async function listPublicRepos(username: string): Promise<Repo[]> {
 
     return resp.data.map((repo: any) => ({
         name: repo.name,
-        username: username,
         owner: repo.owner.login
     }))
 }
 
-export async function getCommits(repo: Repo): Promise<Commit[]> {
-    const resp = await api.get(`${GH_API_URL}/repos/${repo.owner}/${repo.name}/commits`)
+export async function getCommits(repo: Repo, username: string): Promise<Commit[]> {
+    let commits: Commit[] = []
 
-    let commits: Commit[] = resp.data.map((data: any) => ({
-        author: data.commit.author.name,
-        date: data.commit.author.date
-    }))
+    for await (const response of octokit.paginate.iterator(
+        octokit.rest.repos.listCommits,
+        {
+            owner: repo.owner,
+            author: username,
+            repo: repo.name,
+            per_page: 100,
+        })) {
+        commits.push(
+            ...response.data.map((commit) => ({
+                author: commit.commit.author?.name ?? "Unknown",
+                date: commit.commit.author?.date ?? "",
+            }))
+        )
+    }
+    console.log("Fetched commits:", commits.length)
     return commits
 }
 
