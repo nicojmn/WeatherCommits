@@ -31,16 +31,6 @@ export async function listPublicRepos(username: string): Promise<Repo[]> {
         name: repo.name,
         owner: repo.owner.login,
     }))
-    //     const resp = await api.get(`${GH_API_URL}/users/${username}/repos?type=public`)
-    //         .catch(error => {
-    //             console.error("Error fetching public repositories:", error)
-    //             return { data: [] }
-    //         })
-
-    //     return resp.data.map((repo: any) => ({
-    //         name: repo.name,
-    //         owner: repo.owner.login
-    //     }))
 }
 
 export async function getCommits(repo: Repo, username: string): Promise<Commit[]> {
