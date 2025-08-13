@@ -1,17 +1,9 @@
 import { GITHUB_TOKEN } from "$env/static/private";
 import type { Repo, Commit } from "$lib/types/github";
-import axios from "axios"
 import { Octokit } from "@octokit/rest";
 
 
 const GH_API_URL = "https://api.github.com"
-
-const api = axios.create({
-    baseURL: GH_API_URL,
-    headers: {
-        Authorization: `token ${GITHUB_TOKEN}`,
-    },
-});
 
 const octokit = new Octokit({
     auth: GITHUB_TOKEN,
