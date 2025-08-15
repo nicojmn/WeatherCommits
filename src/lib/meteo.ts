@@ -12,7 +12,6 @@ function sortDates(dates: string[]): string[] {
 }
 
 export async function weatherCodes(dates: string[], latitude: number, longitude: number): Promise<number[]> {
-    let codes: number[] = []
     dates = sortDates(dates)
     let start = dates[0]; let end = dates[dates.length - 1]
 
@@ -25,17 +24,16 @@ export async function weatherCodes(dates: string[], latitude: number, longitude:
     }
 
     console.log("Params :", params)
-    await api.get("/forecast", { params })
-        .then((response) => {
-            if (response.data && response.data.daily && response.data.daily.weather_code) {
-                codes = response.data.daily.weather_code
-                console.log("Data : ", response.data.daily.weather_code)
-            } else {
-                console.warn("No weather codes found in the response.")
-            }
-        })
-        .catch((error) => {
-            console.error("Error fetching weather codes:", error)
-        })
+    const resp = await api.get("/forecast", { params })
+    const daily = await resp.data?.daily
+    console.log("Daily", daily)
+
+    const codes = daily.time
+        .map((date: string, i: number) => ({
+            date,
+            code: daily.weather_code[i]
+        }))
+        .filter((item: any) => dates.includes(item.date))
+        .map((item: any) => item.code);
     return codes
 }
