@@ -1,19 +1,33 @@
 import { listPublicRepos, getCommits, commitToDate } from "$lib/github"
+import { weatherCodes } from "$lib/meteo";
 import type { Commit } from "$lib/types/github"
 import type { PageServerLoad } from './$types';
 
+function median(codes: number[]): number {
+    const mid = Math.floor(codes.length / 2);
+    codes = codes.sort();
+    return codes.length % 2 !== 0 ? codes[mid] : (codes[mid - 1] + codes[mid]) / 2;
+}
+
 export const load: PageServerLoad = async ({ url }) => {
-    let dates: string[] = []
     let user = url.searchParams.get('user') || "octocat"; // fallback to octocat if no user is provided to avoid errors
 
     const repos = await listPublicRepos(user);
     const commits = await Promise.all(
         repos.map((repo) => getCommits(repo, user))
     )
-    commits.flat().forEach((commit: Commit) => {
-        commitToDate(commit).then((date => {
-            dates.push(date)
-        }))
-    })
-    return { dates };
+    const flatten = commits.flat()
+
+    const dates = await Promise.all(
+        flatten.map((commit: Commit) => commitToDate(commit))
+    )
+
+    const codes = await weatherCodes(dates, 50.67, 4.61);
+    const med = median(codes);
+    console.log("Codes :", codes)
+    return {
+        codes: {
+            median: med
+        }
+    };
 }
