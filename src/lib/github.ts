@@ -37,7 +37,7 @@ export async function getCommits(repo: Repo, username: string): Promise<Commit[]
             per_page: 100,
         })) {
         commits.push(
-            ...response.data.map((commit) => ({
+            ...response.data.filter((data: any) => !commits.includes(data.commit.author?.date)).map((commit) => ({
                 author: commit.commit.author?.name ?? "Unknown",
                 date: commit.commit.author?.date ?? "",
             }))
