@@ -7,7 +7,10 @@
 </script>
 
 <div>
-    {#each data.dates as date}
-        <span>{date}</span><br />
-    {/each}
+    {#if data.codes.median}
+        <span> Weather median code : {data.codes.median}</span><br />
+    {:else}
+        <span>Loading data, this might take a few minutes</span>
+    {/if}
+    <hr />
 </div>
