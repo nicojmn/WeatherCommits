@@ -18,13 +18,17 @@ export const load: PageServerLoad = async ({ url }) => {
     const height = url.searchParams.get('height') || "400"
     const lat = url.searchParams.get('lat') || "50.67"; // TODO : find a more privacy friendly solution
     const long = url.searchParams.get('long') || "4.61"; // TODO : find a more privacy friendly solution
+    const lastYear = url.searchParams.get('lastYear') || true
 
-    const cached: string | undefined = await cache.get(user);
-    if (cached) {
+    const cached: any | undefined = await cache.get(user);
+    if (cached && cached.lat === lat &&
+        cached.long === long &&
+        cached.lastYear === lastYear) {
+        console.log("Cache hit for user :", user);
         console.log("Got cached value :", cached)
         return {
             codes: {
-                median: cached
+                median: cached.median
             },
             card: {
                 width: width,
@@ -43,9 +47,14 @@ export const load: PageServerLoad = async ({ url }) => {
         flatten.map((commit: Commit) => commitToDate(commit))
     )
 
-    const codes = await weatherCodes(dates, parseInt(lat), parseInt(long));
+    const codes = await weatherCodes(dates, parseInt(lat), parseInt(long), lastYear === "true");
     const med = median(codes);
-    cache.set(user, cmap.get(med) || "unknown")
+    cache.set(user, {
+        lat: lat,
+        long: long,
+        lastYear: lastYear,
+        median: cmap.get(med) || "unknown"
+    })
     console.log("Codes :", codes)
     return {
         codes: {

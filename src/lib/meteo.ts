@@ -44,9 +44,15 @@ export function codesMap(): Map<number, string> {
     ]);
 }
 
-export async function weatherCodes(dates: string[], latitude: number, longitude: number): Promise<number[]> {
+export async function weatherCodes(dates: string[], latitude: number, longitude: number, lastYear: boolean): Promise<number[]> {
     dates = sortDates(dates)
     let start = dates[0]; let end = dates[dates.length - 1]
+
+    if (lastYear) {
+        let tmp = new Date(end)
+        tmp.setFullYear(tmp.getFullYear() - 1)
+        start = tmp.toISOString().split("T")[0]
+    }
 
     const params = {
         daily: "weather_code",
