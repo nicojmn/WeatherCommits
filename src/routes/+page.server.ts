@@ -10,7 +10,9 @@ function median(codes: number[]): number {
 }
 
 export const load: PageServerLoad = async ({ url }) => {
-    let user = url.searchParams.get('user') || "octocat"; // fallback to octocat if no user is provided to avoid errors
+    const user = url.searchParams.get('user') || "octocat"; // fallback to octocat if no user is provided to avoid errors
+    const width = url.searchParams.get('width') || "800"
+    const height = url.searchParams.get('height') || "400"
 
     const repos = await listPublicRepos(user);
     const commits = await Promise.all(
@@ -28,6 +30,10 @@ export const load: PageServerLoad = async ({ url }) => {
     return {
         codes: {
             median: med
+        },
+        card: {
+            width: width,
+            height: height
         }
     };
 }
