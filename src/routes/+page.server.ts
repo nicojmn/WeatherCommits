@@ -15,6 +15,8 @@ export const load: PageServerLoad = async ({ url }) => {
     const user = url.searchParams.get('user') || "octocat"; // fallback to octocat if no user is provided to avoid errors
     const width = url.searchParams.get('width') || "800"
     const height = url.searchParams.get('height') || "400"
+    const lat = url.searchParams.get('lat') || "50.67"; // TODO : find a more privacy friendly solution
+    const long = url.searchParams.get('long') || "4.61"; // TODO : find a more privacy friendly solution
 
     const repos = await listPublicRepos(user);
     const commits = await Promise.all(
@@ -26,7 +28,7 @@ export const load: PageServerLoad = async ({ url }) => {
         flatten.map((commit: Commit) => commitToDate(commit))
     )
 
-    const codes = await weatherCodes(dates, 50.67, 4.61);
+    const codes = await weatherCodes(dates, parseInt(lat), parseInt(long));
     const med = median(codes);
     console.log("Codes :", codes)
     return {
