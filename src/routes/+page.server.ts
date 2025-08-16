@@ -1,7 +1,9 @@
 import { listPublicRepos, getCommits, commitToDate } from "$lib/github"
-import { weatherCodes } from "$lib/meteo";
+import { weatherCodes, codesMap } from "$lib/meteo";
 import type { Commit } from "$lib/types/github"
 import type { PageServerLoad } from './$types';
+
+const cmap = codesMap()
 
 function median(codes: number[]): number {
     const mid = Math.floor(codes.length / 2);
@@ -29,7 +31,7 @@ export const load: PageServerLoad = async ({ url }) => {
     console.log("Codes :", codes)
     return {
         codes: {
-            median: med
+            median: cmap.get(med) || "unknown",
         },
         card: {
             width: width,
