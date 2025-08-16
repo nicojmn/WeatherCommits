@@ -26,6 +26,7 @@
 	},
 	"dependencies": {
 		"@octokit/rest": "^22.0.0",
-		"axios": "^1.11.0"
+		"axios": "^1.11.0",
+		"node-cache": "^5.1.2"
 	}
 }

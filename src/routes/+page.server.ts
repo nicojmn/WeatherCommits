@@ -1,5 +1,6 @@
 import { listPublicRepos, getCommits, commitToDate } from "$lib/github"
 import { weatherCodes, codesMap } from "$lib/meteo";
+import cache from "$lib/cache";
 import type { Commit } from "$lib/types/github"
 import type { PageServerLoad } from './$types';
 
@@ -18,6 +19,20 @@ export const load: PageServerLoad = async ({ url }) => {
     const lat = url.searchParams.get('lat') || "50.67"; // TODO : find a more privacy friendly solution
     const long = url.searchParams.get('long') || "4.61"; // TODO : find a more privacy friendly solution
 
+    const cached: string | undefined = await cache.get(user);
+    if (cached) {
+        console.log("Got cached value :", cached)
+        return {
+            codes: {
+                median: cached
+            },
+            card: {
+                width: width,
+                height: height
+            }
+        }
+    }
+
     const repos = await listPublicRepos(user);
     const commits = await Promise.all(
         repos.map((repo) => getCommits(repo, user))
@@ -30,6 +45,7 @@ export const load: PageServerLoad = async ({ url }) => {
 
     const codes = await weatherCodes(dates, parseInt(lat), parseInt(long));
     const med = median(codes);
+    cache.set(user, cmap.get(med) || "unknown")
     console.log("Codes :", codes)
     return {
         codes: {
