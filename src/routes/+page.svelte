@@ -55,7 +55,7 @@
                 y="271.9321"
                 id="text7-7"
                 ><tspan id="tspan1" x="182.05556" y="271.9321"
-                    >{codes.median}</tspan
+                    >{codes.median.desc}</tspan
                 ></text
             >
         </svg>
