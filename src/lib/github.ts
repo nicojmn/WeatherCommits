@@ -1,6 +1,7 @@
 import { GITHUB_TOKEN } from "$env/static/private";
 import type { Repo, Commit } from "$lib/types/github";
 import { Octokit } from "@octokit/rest";
+import cache from "$lib/cache";
 
 
 const GH_API_URL = "https://api.github.com"
@@ -26,6 +27,9 @@ export async function listPublicRepos(username: string): Promise<Repo[]> {
 }
 
 export async function getCommits(repo: Repo, username: string): Promise<Commit[]> {
+    if (cache.has(`commits-${repo.name}-${username}`)) {
+        return cache.get(`commits-${repo.name}-${username}`) as Commit[];
+    }
     let commits: Commit[] = []
 
     for await (const response of octokit.paginate.iterator(
@@ -44,6 +48,7 @@ export async function getCommits(repo: Repo, username: string): Promise<Commit[]
         )
     }
     console.log("Fetched commits:", commits.length)
+    cache.set(`commits-${repo.name}-${username}`, commits);
     return commits
 }
 
