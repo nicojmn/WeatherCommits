@@ -1,10 +1,22 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import cloud from "$lib/assets/feather-icons/cloud.svg";
+    import drizzle from "$lib/assets/feather-icons/drizzle.svg";
+    import sun from "$lib/assets/feather-icons/sun.svg";
+    import thunder from "$lib/assets/feather-icons/thunder.svg";
+
     import type { PageProps } from "./$types";
 
     let { data }: PageProps = $props();
     let { codes = {}, card = {} } = data;
     console.log("Page Props:", data);
+
+    const svgMap: Map<string, string> = new Map([
+        ["cloud", cloud],
+        ["drizzle", drizzle],
+        ["sun", sun],
+        ["thunder", thunder],
+    ]);
 </script>
 
 <div>
@@ -58,6 +70,14 @@
                     >{codes.median.desc}</tspan
                 ></text
             >
+            <image
+                href={svgMap.get(codes.median.svg)}
+                x="250.5325"
+                y="80.43063"
+                width="100"
+                height="100"
+                id="image1"
+            />
         </svg>
     {:else}
         <span>Loading data, this might take a few minutes</span>
