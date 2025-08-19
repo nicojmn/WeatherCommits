@@ -33,7 +33,8 @@ export const load: PageServerLoad = async ({ url }) => {
             card: {
                 width: width,
                 height: height
-            }
+            },
+            user: user
         }
     }
 
@@ -47,15 +48,15 @@ export const load: PageServerLoad = async ({ url }) => {
         flatten.map((commit: Commit) => commitToDate(commit))
     )
 
-    const codes = await weatherCodes(dates, parseInt(lat), parseInt(long), lastYear === "true");
-    const med = median(codes);
+    const weatherCode = await weatherCodes(dates, parseInt(lat), parseInt(long), lastYear === "true");
+    const med = median(weatherCode);
     cache.set(user, {
         lat: lat,
         long: long,
         lastYear: lastYear,
         median: cmap.get(med) || "unknown"
     })
-    console.log("Codes :", codes)
+    console.log("Codes :", weatherCode)
     return {
         codes: {
             median: cmap.get(med) || "unknown",
@@ -63,6 +64,7 @@ export const load: PageServerLoad = async ({ url }) => {
         card: {
             width: width,
             height: height
-        }
+        },
+        user: user
     };
 }
